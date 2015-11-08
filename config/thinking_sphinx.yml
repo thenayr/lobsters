@@ -1,0 +1,10 @@
+production:
+  address: sphinx.local
+  port: 9306
+  min_infix_len: 2
+
+development:
+  min_infix_len: 2
+  address: sphinx.local
+  port: 9306
+  min_infix_len: 2

@@ -1,0 +1,45 @@
+web:
+  build: .
+  environment:
+    DOCKER: True
+  links:
+    - pg:pg.local
+    - sphinx:sphinx.local
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
+  volumes:
+    - .:/code
+  volumes_from:
+    - shared-gems-vol
+  ports:
+    - 80:3000
+
+pg:
+  image: postgres:9.3
+
+mysql:
+  image: mysql/mysql-server:5.6
+  environment:
+    MYSQL_ROOT_PASSWORD: lobster
+    MYSQL_PASSOWRD: lobster
+    MYSQL_USER: lobster
+    MYSQL_DATABASE: lobster
+  ports:
+    - 3306
+
+pg:
+  image: postgres:9.3
+
+sphinx:
+  image: centurylink/sphinx:2.1.9.02
+  ports:
+    - 9313
+    - 9312
+    - 9306
+  volumes:
+    - ./config/development.sphinx.conf:/usr/local/etc/sphinx.conf
+    - .:/code/
+  links:
+    - pg:pg.local
+    - mysql:db.local
