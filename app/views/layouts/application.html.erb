@@ -18,7 +18,7 @@
   <% end %>
   <title><%= @title.present? ? "#{@title} | " : "" %><%=
     Rails.application.name %></title>
-  <%= stylesheet_link_tag "application", :media => "all" %>
+  <%= stylesheet_link_tag "application", :media => "screen, projection" %>
   <% if @user %>
     <%= javascript_include_tag "application" %>
     <script>
@@ -37,12 +37,48 @@
   <% end %>
 </head>
 <body>
+<header>
       <!-- Page Layout here -->
-    <div class="row">
-      <div id="site-layout-example-top" class="col s12">
-        <div id="header">
-          <nav>
-            <div class="nav-wrapper">
+        <ul id="nav-mobile" class="side-nav fixed" >
+          <!-- Grey navigation panel -->
+          <li><a id="l_holder" style="background-color: #<%= sprintf("%02x%02x%02x",
+          [ 255, (@traffic * 7).floor + 50.0 ].min, 0, 0) %>;" href="/"
+          title="<%= Rails.application.name %> (Current traffic: <%= @traffic.to_i %>)"></a></li>
+
+          <% links = {
+            "/" => @cur_url == "/" ? Rails.application.name : "Home",
+            "/recent" => "Recent",
+            "/comments" => "Comments"
+          } %>
+
+          <% if @user %>
+            <% links.merge!({ "/threads" => "Your Threads",
+              "/stories/new" => "Submit Story" }) %>
+          <% end %>
+
+          <% links.merge!({ "/search" => "Search" }) %>
+
+          <% if @cur_url.present? && !links.keys.include?(@cur_url) &&
+          @heading.present? %>
+            <span id="headertitle">
+              <li><a href="<%= @cur_url %>"><%= @heading %></a></li>
+            </span>
+          <% end %>
+
+          <% links.each do |u,v| %>
+            <li class="bold"><a class="waves-effect waves-teal" href="<%= u %>" <%= u == @cur_url ? raw("class=\"cur_url\"") :
+              "" %>><%= v %></a></li>
+          <% end %>
+        </ul>
+</header>
+
+
+
+<main>
+      <nav>
+        <div class="nav-wrapper">
+          <div class="container">
+            <div class="col s12">
               <a href="#" class="brand-logo">Logo</a>
               <ul id="nav-mobile" class="right hide-on-med-and-down">
               <% if @user %>
@@ -67,80 +103,67 @@
               <% end %>
               </ul>
             </div>
-          </nav>
-
-        </div>
-
-      </div>
-
-      <div class="col s3">
-        <!-- Grey navigation panel -->
-      <div id="headerleft">
-        <a id="l_holder" style="background-color: #<%= sprintf("%02x%02x%02x",
-        [ 255, (@traffic * 7).floor + 50.0 ].min, 0, 0) %>;" href="/"
-        title="<%= Rails.application.name %> (Current traffic: <%= @traffic.to_i %>)"></a>
-
-        <% links = {
-          "/" => @cur_url == "/" ? Rails.application.name : "Home",
-          "/recent" => "Recent",
-          "/comments" => "Comments"
-        } %>
-
-        <% if @user %>
-          <% links.merge!({ "/threads" => "Your Threads",
-            "/stories/new" => "Submit Story" }) %>
-        <% end %>
-
-        <% links.merge!({ "/search" => "Search" }) %>
-
-        <% if @cur_url.present? && !links.keys.include?(@cur_url) &&
-        @heading.present? %>
-          <span id="headertitle">
-            <a href="<%= @cur_url %>"><%= @heading %></a>
-          </span>
-        <% end %>
-
-        <span class="headerlinks">
-          <% links.each do |u,v| %>
-            <a href="<%= u %>" <%= u == @cur_url ? raw("class=\"cur_url\"") :
-              "" %>><%= v %></a>
-          <% end %>
-        </span>
-      </div>
-      </div>
-
-      <div class="col s9">
-        <!-- Teal page content  -->
-      <div id="wrapper">
-
-        <div id="inside">
-          <% [ :error, :success, :notice ].each do |f| %>
-            <% if flash[f].present? %>
-              <div class="flash-<%= f %>"><%= flash[f] %></div>
-            <% end %>
-          <% end %>
-
-          <%= yield %>
-
-          <div id="footer">
-            <a href="/moderations">Moderation Log</a>
-            <% if @user && !@user.is_new? &&
-            (iqc = InvitationRequest.verified_count) > 0 %>
-              <a href="/invitations">Invitation Queue (<%= iqc %>)</a>
-            <% end %>
-            <a href="/chat">Chat</a>
-            <% if defined?(BbsController) %>
-              <a href="/bbs">BBS</a>
-            <% end %>
-            <a href="/privacy">Privacy</a>
-            <a href="/about">About</a>
           </div>
-          <div class="clear"></div>
+        </div>
+      </nav>
+        <!-- Teal page content  -->
+      <div class="container">
+        <div id="wrapper">
+          <div id="inside">
+            <% [ :error, :success, :notice ].each do |f| %>
+              <% if flash[f].present? %>
+                <div class="flash-<%= f %>"><%= flash[f] %></div>
+              <% end %>
+            <% end %>
+
+            <%= yield %>
+
+            <div class="clear"></div>
+          </div>
         </div>
       </div>
+</main>
+
+<footer class="page-footer">
+  <div class="container">
+    <div class="row">
+
+
+      <div class="col l6 s12">
+          <h5 class="white-text">Contact</h5>
+          <p class="grey-text text-lighten-4">You can contact the admin at.</p>
       </div>
+      <div class="col l4 offset-l2 s12">
+        <h5 class="white-text">Links</h5>
+        <ul>
+          <li><a class="grey-text text-lighten-3" href="/moderations">Moderation Log</a></li>
+          <% if @user && !@user.is_new? &&
+          (iqc = InvitationRequest.verified_count) > 0 %>
+            <li><a class="grey-text text-lighten-3" href="/invitations">Invitation Queue (<%= iqc %>)</a></li>
+          <% end %>
+          <li><a class="grey-text text-lighten-3" href="/chat">Chat</a></li>
+          <% if defined?(BbsController) %>
+            <li><a class="grey-text text-lighten-3" href="/bbs">BBS</a></li>
+          <% end %>
+          <li><a class="grey-text text-lighten-3" href="/privacy">Privacy</a></li>
+          <li><a class="grey-text text-lighten-3" href="/about">About</a></li>
+        </ul>
+      </div>
+
+
+
+
 
     </div>
-          
+  </div>
+  <div class="footer-copyright">
+    <div class="container">
+    © 2014-2015 Materialize, All rights reserved.
+    <a class="grey-text text-lighten-4 right" href="https://github.com/Dogfalo/materialize/blob/master/LICENSE">MIT License</a>
+    </div>
+  </div>
+</footer>
+
+
 </body>
 </html>

@@ -32,9 +32,11 @@ class="story <%= story.vote && story.vote[:vote] == 1 ? "upvoted" : "" %>
     <% if story.can_be_seen_by_user?(@user) %>
       <span class="tags">
         <% story.sorted_taggings.each do |tagging| %>
+          <div class="chip">
           <a href="<%= tag_path(tagging.tag.tag) %>"
             class="<%= tagging.tag.css_class %>"
             title="<%= tagging.tag.description %>"><%= tagging.tag.tag %></a>
+          </div>
         <% end %>
       </span>
       <% if story.domain.present? %>

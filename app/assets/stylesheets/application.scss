@@ -1,1 +1,34 @@
+@import "materialize/components/color";
+$primary-color: color("blue", "lighten-2") !default;
 @import "materialize";
+
+main {
+  min-height:700px;
+}
+
+ul.side-nav.fixed li a {
+  font-size: 13px;
+  line-height: 44px;
+  height: 44px;
+}
+
+.bold > a {
+  font-weight: bold;
+}
+
+.side-nav li:hover, .side-nav li.active {
+  background-color: #ddd;
+}
+
+ul.side-nav.fixed li:hover, ul.side-nav.fixed li.active {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+header, main, footer {
+  padding-left: 240px;
+}
+
+ol.stories, ol.comments, ol.search_results {
+  padding: 0px;
+  list-style: none;
+  margin: 0px;
+}
