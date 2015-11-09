@@ -37,8 +37,44 @@
   <% end %>
 </head>
 <body>
-  <div id="wrapper">
-    <div id="header">
+      <!-- Page Layout here -->
+    <div class="row">
+      <div id="site-layout-example-top" class="col s12">
+        <div id="header">
+          <nav>
+            <div class="nav-wrapper">
+              <a href="#" class="brand-logo">Logo</a>
+              <ul id="nav-mobile" class="right hide-on-med-and-down">
+              <% if @user %>
+                <% if (count = @user.unread_message_count) > 0 %>
+                <li><a href="/messages" class="new_messages <%= @cur_url == "/messages" ?
+                  "cur_url" : "" %>"><%= count %> New Message<%= count == 1 ? "" :
+                  "s" %></a></li>
+                <% else %>
+                <li><a href="/messages" <%= @cur_url == "/messages" ?
+                  raw("class=\"cur_url\"") : "" %>>Messages</a></li>
+                <% end %>
+                <li><a href="/filters" <%= @cur_url == "/filters" ?
+              raw("class=\"cur_url\"") : "" %>>Filters</a></li>
+                <li><a href="/settings" <%= @cur_url == "/settings" ?
+                  raw("class=\"cur_url\"") : "" %>><%= @user.username %>
+                  (<%= @user.karma %>)</a></li>
+                <%= link_to "Logout", { :controller => "login", :action => "logout" },
+                  :data => { :confirm => "Are you sure you want to logout?" },
+                  :method => "post" %>
+              <% else %>
+                <li><a href="/login">Login</a></li>
+              <% end %>
+              </ul>
+            </div>
+          </nav>
+
+        </div>
+
+      </div>
+
+      <div class="col s3">
+        <!-- Grey navigation panel -->
       <div id="headerleft">
         <a id="l_holder" style="background-color: #<%= sprintf("%02x%02x%02x",
         [ 255, (@traffic * 7).floor + 50.0 ].min, 0, 0) %>;" href="/"
@@ -71,61 +107,40 @@
           <% end %>
         </span>
       </div>
+      </div>
 
-      <div id="headerright">
-        <span class="headerlinks">
-        <a href="/filters" <%= @cur_url == "/filters" ?
-          raw("class=\"cur_url\"") : "" %>>Filters</a>
-        <% if @user %>
-          <% if (count = @user.unread_message_count) > 0 %>
-            <a href="/messages" class="new_messages <%= @cur_url == "/messages" ?
-              "cur_url" : "" %>"><%= count %> New Message<%= count == 1 ? "" :
-              "s" %></a>
-          <% else %>
-            <a href="/messages" <%= @cur_url == "/messages" ?
-              raw("class=\"cur_url\"") : "" %>>Messages</a>
+      <div class="col s9">
+        <!-- Teal page content  -->
+      <div id="wrapper">
+
+        <div id="inside">
+          <% [ :error, :success, :notice ].each do |f| %>
+            <% if flash[f].present? %>
+              <div class="flash-<%= f %>"><%= flash[f] %></div>
+            <% end %>
           <% end %>
 
-          <a href="/settings" <%= @cur_url == "/settings" ?
-            raw("class=\"cur_url\"") : "" %>><%= @user.username %>
-            (<%= @user.karma %>)</a>
+          <%= yield %>
 
-          <%= link_to "Logout", { :controller => "login", :action => "logout" },
-            :data => { :confirm => "Are you sure you want to logout?" },
-            :method => "post" %>
-        <% else %>
-          <a href="/login">Login</a>
-        <% end %>
-        </span>
+          <div id="footer">
+            <a href="/moderations">Moderation Log</a>
+            <% if @user && !@user.is_new? &&
+            (iqc = InvitationRequest.verified_count) > 0 %>
+              <a href="/invitations">Invitation Queue (<%= iqc %>)</a>
+            <% end %>
+            <a href="/chat">Chat</a>
+            <% if defined?(BbsController) %>
+              <a href="/bbs">BBS</a>
+            <% end %>
+            <a href="/privacy">Privacy</a>
+            <a href="/about">About</a>
+          </div>
+          <div class="clear"></div>
+        </div>
+      </div>
       </div>
 
-      <div class="clear"></div>
     </div>
-
-    <div id="inside">
-      <% [ :error, :success, :notice ].each do |f| %>
-        <% if flash[f].present? %>
-          <div class="flash-<%= f %>"><%= flash[f] %></div>
-        <% end %>
-      <% end %>
-
-      <%= yield %>
-
-      <div id="footer">
-        <a href="/moderations">Moderation Log</a>
-        <% if @user && !@user.is_new? &&
-        (iqc = InvitationRequest.verified_count) > 0 %>
-          <a href="/invitations">Invitation Queue (<%= iqc %>)</a>
-        <% end %>
-        <a href="/chat">Chat</a>
-        <% if defined?(BbsController) %>
-          <a href="/bbs">BBS</a>
-        <% end %>
-        <a href="/privacy">Privacy</a>
-        <a href="/about">About</a>
-      </div>
-      <div class="clear"></div>
-    </div>
-  </div>
+          
 </body>
 </html>

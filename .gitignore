@@ -36,3 +36,5 @@ config/unicorn.conf.rb
 app/controllers/bbs_controller.rb
 app/views/layouts/bbs.*
 public/bbs
+
+*.swp
